@@ -1,0 +1,43 @@
+name: TaapTaap
+options:
+  bundleIdPrefix: com.fortvna
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    IPHONEOS_DEPLOYMENT_TARGET: 17.0
+packages:
+  TaapTaapCore:
+    path: .
+targets:
+  TaapTaap:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: TaapTaapiOS
+        excludes:
+          - "**/*.md"
+    info:
+      path: TaapTaapiOS/Resources/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        CFBundleDisplayName: Taap Taap
+    dependencies:
+      - package: TaapTaapCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fortvna.taaptaap
+        PRODUCT_NAME: TaapTaap
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: NO
+  TaapTaapTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Tests/TaapTaapCoreTests
+    dependencies:
+      - target: TaapTaap
+      - package: TaapTaapCore
