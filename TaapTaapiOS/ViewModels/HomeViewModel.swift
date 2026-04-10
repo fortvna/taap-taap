@@ -25,9 +25,8 @@ final class HomeViewModel: ObservableObject {
 
     @discardableResult
     func createPlayer(name: String, tileColor: TileColor) -> PlayerProfile {
-        let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let profile = playerStore.createPlayer(
-            name: cleanName,
+            name: name,
             tileColor: tileColor
         )
         refresh()
