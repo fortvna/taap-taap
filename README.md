@@ -31,19 +31,32 @@ A modern iOS rebuild of the original **Taap Taap** reaction game.
 - `Tests/TaapTaapCoreTests/`
   - Game and persistence unit tests
 
-## iOS Project Generation
+## Run in Xcode (Quick Start)
 
-This repository includes an `XcodeGen` spec (`project.yml`) for a clean, reproducible Xcode project.
-
-1. Install XcodeGen
-2. Run:
+From repository root on macOS:
 
 ```bash
-xcodegen generate
+./scripts/setup_xcode.sh
 ```
 
-3. Open `TaapTaap.xcodeproj` in Xcode
-4. Build and run on iOS simulator or device
+This script will:
+
+1. Verify macOS + XcodeGen availability
+2. Generate `TaapTaap.xcodeproj` from `project.yml`
+3. Open the project in Xcode
+
+If XcodeGen is missing:
+
+```bash
+brew install xcodegen
+```
+
+Alternative Make targets:
+
+```bash
+make xcodegen
+make xcode-open
+```
 
 ## Gameplay Mechanics
 
