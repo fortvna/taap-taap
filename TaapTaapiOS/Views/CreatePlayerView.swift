@@ -8,6 +8,10 @@ struct CreatePlayerView: View {
     @State private var selectedColor: TileColor = TileColor.presets[0]
 
     var onCreate: (String, TileColor) -> Void
+    
+    private var trimmedPlayerName: String {
+        playerName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 
     var body: some View {
         NavigationStack {
@@ -39,9 +43,10 @@ struct CreatePlayerView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") {
-                        onCreate(playerName, selectedColor)
+                        onCreate(trimmedPlayerName, selectedColor)
                         dismiss()
                     }
+                    .disabled(trimmedPlayerName.isEmpty)
                 }
             }
         }
