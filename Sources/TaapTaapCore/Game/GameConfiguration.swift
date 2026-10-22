@@ -12,7 +12,7 @@ public struct GameConfiguration: Sendable {
     public let powerUpFrequency: Int
 
     public init(
-        rows: Int = 4,
+        rows: Int = 6,
         columns: Int = 4,
         startingLives: Int = 3,
         baseInterval: TimeInterval = 5,

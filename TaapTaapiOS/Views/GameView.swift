@@ -13,7 +13,7 @@ struct GameView: View {
     @State private var didPersistResult = false
     @State private var hitTile: Int?
     @State private var showHit = false
-    private let keys = Array("1234qwerasdfzxcv")
+    private let keys = Array("1234qwerasdfzxcv5678tyui")
 
     init(player: PlayerProfile, mode: GameMode, homeViewModel: HomeViewModel) {
         self.player = player
@@ -24,22 +24,25 @@ struct GameView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let wide = geometry.size.width > 740
+            let compact = geometry.size.width > geometry.size.height && geometry.size.height < 500
+            let wide = geometry.size.width > 740 || compact
+            let columns = compact ? viewModel.rows : viewModel.columns
+            let maximumBoardWidth = boardWidth(in: geometry.size, columns: columns, compact: compact, wide: wide)
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: compact ? 8 : 20) {
                     topBar
                     if wide {
-                        HStack(alignment: .top, spacing: 28) {
-                            playfield.frame(maxWidth: min(580, max(260, geometry.size.height - 175)))
-                            dashboard.frame(width: 245)
+                        HStack(alignment: .top, spacing: compact ? 16 : 28) {
+                            playfield(columns: columns, compact: compact).frame(maxWidth: maximumBoardWidth)
+                            dashboard(compact: compact).frame(width: 245)
                         }
                     } else {
                         scoreStrip
-                        playfield.frame(maxWidth: min(540, max(240, geometry.size.height - 310)))
+                        playfield(columns: columns, compact: false).frame(maxWidth: maximumBoardWidth)
                         statusStrip
                     }
                 }
-                .padding(24).frame(maxWidth: 1000).frame(maxWidth: .infinity)
+                .padding(compact ? 8 : 24).frame(maxWidth: 1000).frame(maxWidth: .infinity)
             }
             .disabled(viewModel.state.isPaused || viewModel.state.isGameOver)
             .accessibilityHidden(viewModel.state.isPaused || viewModel.state.isGameOver)
@@ -66,6 +69,16 @@ struct GameView: View {
             do { try await Task.sleep(for: .milliseconds(240)) } catch { return }
             withAnimation(.easeOut(duration: 0.18)) { showHit = false }
         }
+    }
+
+    private func boardWidth(in size: CGSize, columns: Int, compact: Bool, wide: Bool) -> CGFloat {
+        let rows = viewModel.rows * viewModel.columns / columns
+        let gap: CGFloat = compact ? 6 : 10
+        let inset: CGFloat = compact ? 12 : 24
+        let reservedHeight: CGFloat = compact ? 112 : (wide ? 210 : 310)
+        let cellHeight = (size.height - reservedHeight - inset - CGFloat(rows - 1) * gap) / CGFloat(rows)
+        let cellSize = max(compact ? 36 : 44, cellHeight)
+        return min(540, CGFloat(columns) * cellSize + CGFloat(columns - 1) * gap + inset)
     }
 
     private var topBar: some View {
@@ -111,8 +124,8 @@ struct GameView: View {
         }.arcadePanel()
     }
 
-    private var playfield: some View {
-        VStack(spacing: 16) {
+    private func playfield(columns: Int, compact: Bool) -> some View {
+        VStack(spacing: compact ? 8 : 16) {
             HStack {
                 Text(viewModel.state.slowdownRemaining > 0 ? "Slow motion" : "Follow the light")
                     .font(.subheadline.weight(.semibold))
@@ -126,22 +139,22 @@ struct GameView: View {
                 RoundedRectangle(cornerRadius: 3).fill(theme.accent)
                     .frame(width: geometry.size.width * viewModel.state.targetProgress)
             }.frame(height: 5).accessibilityHidden(true)
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: viewModel.columns), spacing: 10) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: compact ? 6 : 10), count: columns), spacing: compact ? 6 : 10) {
                 ForEach(0..<(viewModel.rows * viewModel.columns), id: \.self) { index in
-                    tile(index)
+                    tile(index, columns: columns)
                 }
             }
-            .padding(12)
+            .padding(compact ? 6 : 12)
             .background(theme.panel, in: RoundedRectangle(cornerRadius: theme.corner + 8))
             .overlay(RoundedRectangle(cornerRadius: theme.corner + 8).strokeBorder(theme.ink.opacity(0.09)))
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Game board")
             .accessibilityIdentifier("game.board")
-            feedback
+            if !compact { feedback }
         }
     }
 
-    private func tile(_ index: Int) -> some View {
+    private func tile(_ index: Int, columns: Int) -> some View {
         let active = index == viewModel.state.activeTileIndex
         let power = active ? viewModel.state.powerUp : nil
         return Button {
@@ -184,7 +197,8 @@ struct GameView: View {
         }
         .buttonStyle(.plain)
         .keyboardShortcut(KeyEquivalent(keys[index]), modifiers: [])
-        .accessibilityLabel("Row \(index / viewModel.columns + 1), column \(index % viewModel.columns + 1), \(active ? (power?.title ?? "bright target") : "unlit")")
+        .accessibilityIdentifier("tile.\(index)")
+        .accessibilityLabel("Row \(index / columns + 1), column \(index % columns + 1), \(active ? (power?.title ?? "bright target") : "unlit")")
         .accessibilityHint(active ? "Tap to score" : "Tapping an unlit square breaks your combo")
     }
 
@@ -218,20 +232,24 @@ struct GameView: View {
         }
     }
 
-    private var dashboard: some View {
-        VStack(alignment: .leading, spacing: 20) {
+    private func dashboard(compact: Bool) -> some View {
+        VStack(alignment: .leading, spacing: compact ? 12 : 20) {
             scoreStrip
             statusStrip.arcadePanel()
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Catch a boost").font(.headline)
-                if mode == .classic { boostHelp("heart.fill", "Extra life", "Adds one heart, up to five.") }
-                boostHelp("hourglass", "Slow motion", "Half speed for five seconds.")
-                boostHelp("shield.fill", "Shield", "Absorbs the next penalty.")
-                Text("A collectible appears after every 8 hits. Tap it before it disappears.")
-                    .font(.caption).foregroundStyle(theme.muted)
-            }.arcadePanel()
+            if compact {
+                feedback
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Catch a boost").font(.headline)
+                    if mode == .classic { boostHelp("heart.fill", "Extra life", "Adds one heart, up to five.") }
+                    boostHelp("hourglass", "Slow motion", "Half speed for five seconds.")
+                    boostHelp("shield.fill", "Shield", "Absorbs the next penalty.")
+                    Text("A collectible appears after every 8 hits. Tap it before it disappears.")
+                        .font(.caption).foregroundStyle(theme.muted)
+                }.arcadePanel()
+            }
             #if os(macOS)
-            Text("Keys: 1–4 / Q–R / A–F / Z–V\nSpace to pause or resume")
+            Text("Keys: 1234 / QWER / ASDF / ZXCV / 5678 / TYUI\nSpace to pause or resume")
                 .font(.caption).foregroundStyle(theme.muted)
             #endif
         }

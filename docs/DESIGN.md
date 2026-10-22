@@ -30,7 +30,7 @@ These are design references, not installed runtime dependencies. No third-party 
 
 Studio deliberately stays calm and conventional as the default. Sakura uses original manga-inspired shapes rather than borrowed characters. Cyber embraces the requested neon/retro vocabulary. Theme differences include backdrop, illustration, type, geometry, border weight, effects, and color—not only an accent-color swap.
 
-Layout: portrait uses score → timer → board → feedback. Wide windows place the board left and stats/boost help right. The home screen pairs a board preview with a player/mode panel, stacking them on narrow windows. The board's cells remain square. Short windows can scroll rather than crop controls.
+Layout: portrait uses score → timer → board → feedback. Wide windows place the board left and stats/boost help right. The home screen pairs a board preview with a player/mode panel, stacking them on narrow windows. The board has four columns and six rows (24 square cells). Short landscape windows use six columns and four rows, keeping the same 24 targets and moving feedback beside the board. Short windows can scroll rather than crop controls.
 
 ## Rules and pacing
 
@@ -48,7 +48,7 @@ The curve is a starting point for device playtests, not a claim of measured opti
 
 ## Accessibility and controls
 
-Active tiles use a scope or collectible symbol, high-value fill, perimeter timer, and border. Every tile has a row/column/state label and is a real button. The keyboard uses four physical rows: 1234, QWER, ASDF, ZXCV. Space pauses and resumes. Decorative art is excluded from accessibility. Reduce Motion disables transient hit animation. Text labels use system styles except display headlines and compact key hints.
+Active tiles use a scope or collectible symbol, high-value fill, perimeter timer, and border. Every tile has a row/column/state label and is a real button. The keyboard uses 24 unique keys, in board order: 1234, QWER, ASDF, ZXCV, 5678, TYUI. Space pauses and resumes. Decorative art is excluded from accessibility. Reduce Motion disables transient hit animation. Text labels use system styles except display headlines and compact key hints.
 
 ## Release playtest checklist
 

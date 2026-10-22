@@ -8,13 +8,15 @@ A reaction arcade for **iPhone, iPad, and native macOS**. Chase the bright squar
   <img src="docs/previews/cyber.png" width="240" alt="Cyber theme on iPhone">
 </p>
 
-Actual iPhone simulator captures. [Design notes and skill references](docs/DESIGN.md).
+Theme previews from the previous 4×4 layout; the current game uses 24 squares. [Design notes and skill references](docs/DESIGN.md).
 
 ## Play your way
 
 - **Classic:** three starting lives; survive as long as you can.
 - **Rush:** a 60-second score attack. Misses break your combo, but do not end the run.
 - **Zen:** untimed practice without losing lives. Pause and choose “Finish practice & save” to record a session.
+
+The board has **four columns and six rows (24 squares)** in every mode. Short landscape windows arrange the same 24 squares as six columns by four rows so the board stays visible.
 
 Every target starts with a **five-second** window. Each hit or expired target multiplies the next window by **0.95**, down to **0.45 seconds** (one second in Zen). Correct taps move the light immediately; letting the timer expire moves it automatically and applies a penalty. The target always moves to a different square.
 
@@ -59,7 +61,7 @@ make build-ios  # Unsigned iPhone/iPad simulator build
 make build-mac  # Unsigned native macOS build
 ```
 
-Touch or click the bright tile. Hardware keyboard controls map each board row to **1234 / QWER / ASDF / ZXCV**; **Space** pauses/resumes. The board adapts to portrait, landscape, iPad split views, and resizable Mac windows. Large layouts show a side panel with the power-up guide.
+Touch or click the bright tile. Hardware keyboard controls map each board row to **1234 / QWER / ASDF / ZXCV / 5678 / TYUI**; **Space** pauses/resumes. The board adapts to portrait, landscape, iPad split views, and resizable Mac windows. Large layouts show a side panel with the power-up guide.
 
 ## Validation
 

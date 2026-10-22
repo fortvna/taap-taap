@@ -17,6 +17,9 @@ struct GameEngineTests {
 
     @Test func startsWithFiveSecondsAndThreeLives() {
         let game = engine()
+        #expect(game.configuration.columns == 4)
+        #expect(game.configuration.rows == 6)
+        #expect(game.configuration.tileCount == 24)
         #expect(game.state.targetTimeRemaining == 5)
         #expect(game.state.livesRemaining == 3)
         #expect(game.state.score == 0)
@@ -56,7 +59,7 @@ struct GameEngineTests {
         let game = engine()
         for _ in 0..<5 { hit(game) }
         let earned = game.state.score
-        game.handleTap(on: (game.state.activeTileIndex + 1) % 16, now: start)
+        game.handleTap(on: (game.state.activeTileIndex + 1) % game.configuration.tileCount, now: start)
         #expect(game.state.score == earned)
         #expect(game.state.streak == 0)
         #expect(game.state.multiplier == 1)
@@ -151,11 +154,11 @@ struct GameEngineTests {
         let game = engine(power: .shield)
         for _ in 0..<9 { hit(game) }
         #expect(game.state.hasShield)
-        game.handleTap(on: (game.state.activeTileIndex + 1) % 16, now: start)
+        game.handleTap(on: (game.state.activeTileIndex + 1) % game.configuration.tileCount, now: start)
         #expect(!game.state.hasShield)
         #expect(game.state.livesRemaining == 3)
         #expect(game.state.streak == 9)
-        game.handleTap(on: (game.state.activeTileIndex + 1) % 16, now: start)
+        game.handleTap(on: (game.state.activeTileIndex + 1) % game.configuration.tileCount, now: start)
         #expect(game.state.livesRemaining == 2)
         #expect(game.state.streak == 0)
     }
@@ -213,7 +216,7 @@ struct GameEngineTests {
     @Test func invalidTileIndicesAreIgnored() {
         let game = engine()
         #expect(game.handleTap(on: -1, now: start) == .ignored)
-        #expect(game.handleTap(on: 16, now: start) == .ignored)
+        #expect(game.handleTap(on: game.configuration.tileCount, now: start) == .ignored)
         #expect(game.state.livesRemaining == 3)
     }
 

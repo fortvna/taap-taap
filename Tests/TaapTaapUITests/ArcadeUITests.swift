@@ -21,6 +21,9 @@ final class ArcadeUITests: XCTestCase {
             reveal(app.buttons["game.start"], in: app)
             app.buttons["game.start"].tap()
             XCTAssertTrue(app.buttons["game.pause"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tile.")).count, 24)
+            XCTAssertTrue(app.buttons["tile.23"].isHittable, "The last row must be reachable in portrait")
+            XCTAssertTrue(app.buttons["tile.23"].label.contains("Row 6, column 4"))
             let target = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "bright target")).firstMatch
             XCTAssertTrue(target.waitForExistence(timeout: 3))
             target.tap()
@@ -35,6 +38,7 @@ final class ArcadeUITests: XCTestCase {
             // Synchronize through real interactions after the system rotation.
             app.buttons["game.pause"].tap()
             app.buttons["game.resume"].tap()
+            XCTAssertTrue(app.buttons["tile.23"].isHittable, "The last row must be reachable in landscape")
             capture("\(theme)-landscape", app: app)
             app.buttons["game.pause"].tap()
             app.buttons["game.leave"].tap()

@@ -130,7 +130,7 @@ struct HomeView: View {
 
     private var demoBoard: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
-            ForEach(0..<12) { index in
+            ForEach(0..<24) { index in
                 RoundedRectangle(cornerRadius: 12)
                     .fill(index == 6 ? theme.target : theme.background)
                     .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(theme.ink.opacity(index == 6 ? 0.7 : 0.06)))
@@ -140,7 +140,7 @@ struct HomeView: View {
                         }
                     }
                     .shadow(color: index == 6 ? theme.accent.opacity(0.45) : .clear, radius: 20)
-                    .aspectRatio(1.4, contentMode: .fit)
+                    .aspectRatio(1, contentMode: .fit)
             }
         }
         .padding(18).arcadePanel()
