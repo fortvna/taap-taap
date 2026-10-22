@@ -1,0 +1,40 @@
+name: Apple builds and core tests
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Test game rules and persistence
+        run: swift test
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate --spec project.yml
+      - name: Build iPhone and iPad
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Build native macOS app
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaapMac -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+      - name: Exercise themes and gameplay on iPhone
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -resultBundlePath iPhone.xcresult CODE_SIGNING_ALLOWED=NO test
+      - name: Exercise themes and gameplay on iPad
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'platform=iOS Simulator,name=iPad (A16)' -resultBundlePath iPad.xcresult CODE_SIGNING_ALLOWED=NO test
+      - name: Export screenshots
+        if: always()
+        run: |
+          if [ -d iPhone.xcresult ]; then xcrun xcresulttool export attachments --path iPhone.xcresult --output-path screenshots/iPhone; fi
+          if [ -d iPad.xcresult ]; then xcrun xcresulttool export attachments --path iPad.xcresult --output-path screenshots/iPad; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apple-ui-results
+          path: |
+            screenshots/
+            *.xcresult
