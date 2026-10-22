@@ -2,6 +2,8 @@
 
 A reaction arcade for **iPhone, iPad, and native macOS**. Chase the bright square, build a combo, and catch power-ups as the board gets faster.
 
+**[Download the apps from Releases](https://github.com/fortvna/taap-taap/releases)** — universal Mac preview, iPhone/iPad package requiring your own signing, and an Xcode simulator app. [Installation instructions](docs/DOWNLOADS.md). The Mac preview is not notarized; the iOS IPA is unsigned.
+
 <p>
   <img src="docs/previews/studio.png" width="240" alt="Studio theme on iPhone">
   <img src="docs/previews/sakura.png" width="240" alt="Sakura theme on iPhone">
@@ -67,7 +69,9 @@ Touch or click the bright tile. Hardware keyboard controls map each board row to
 
 GitHub Actions runs core tests, builds both Apple apps, and exercises all themes, gameplay, pause/resume, and landscape on iPhone and iPad simulators. Screenshots and test result bundles are uploaded as the `apple-ui-results-iPhone` and `apple-ui-results-iPad` artifacts.
 
-The core tests cover score accumulation, combo caps, acceleration, expired taps, timer catch-up, all power-ups, pause/resume, mode end conditions, restart, and legacy persistence. Before release, review simulator screenshots and run the [device checklist](docs/DESIGN.md) on real hardware, particularly Dynamic Type, VoiceOver, haptics, and reaction timing. Signing, App Store packaging, and distribution remain separate release steps.
+The core tests cover score accumulation, combo caps, acceleration, expired taps, timer catch-up, all power-ups, pause/resume, mode end conditions, restart, and legacy persistence. Review simulator screenshots and run the [device checklist](docs/DESIGN.md) on real hardware, particularly Dynamic Type, VoiceOver, haptics, and reaction timing. Apple distribution signing, notarization, and App Store submission require developer credentials.
+
+The **Publish app downloads** workflow builds Release packages, checks Mac signing and launch, verifies CPU architectures, and publishes assets with checksums. Run it manually on `main` with a new version tag, or push a `v*` tag. Tags containing a suffix (such as `v2.0.0-preview.1`) publish as prereleases. Existing releases are never overwritten by the workflow. Build the same packages locally with `bash scripts/package_apps.sh` after generating the Xcode project.
 
 ## Structure
 
