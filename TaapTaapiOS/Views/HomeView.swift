@@ -23,14 +23,15 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 30) {
                     masthead
                     themeSelector
-                    if geometry.size.width > 850 {
+                    if geometry.size.width > 780 {
                         HStack(alignment: .top, spacing: 32) {
                             hero.frame(maxWidth: .infinity)
                             launchPanel.frame(width: 370)
                         }
                     } else {
-                        hero
+                        compactHero
                         launchPanel
+                        demoBoard.frame(maxWidth: 480).frame(maxWidth: .infinity)
                     }
                     HStack(alignment: .firstTextBaseline) {
                         Label("LOCAL LEGENDS", systemImage: "trophy.fill")
@@ -89,6 +90,19 @@ struct HomeView: View {
             Text("REACTION ARCADE")
                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                 .tracking(1).foregroundStyle(theme.muted)
+        }
+    }
+
+    private var compactHero: some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Chase the light.")
+                    .font(.system(.largeTitle, design: theme.fontDesign).weight(.black))
+                Text("Tap. Build a streak. Beat your best.")
+                    .font(.subheadline).foregroundStyle(theme.muted)
+            }
+            Spacer(minLength: 0)
+            ThemeEmblem().frame(width: 72, height: 72).clipped()
         }
     }
 

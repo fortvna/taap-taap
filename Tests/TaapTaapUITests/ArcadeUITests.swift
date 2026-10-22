@@ -3,6 +3,7 @@ import XCTest
 @MainActor
 final class ArcadeUITests: XCTestCase {
     func testThemesGameplayAndPause() throws {
+        continueAfterFailure = false
         let app = XCUIApplication()
         app.launch()
         for theme in ["studio", "sakura", "cyber"] {
@@ -30,11 +31,24 @@ final class ArcadeUITests: XCTestCase {
             app.buttons["game.resume"].tap()
             XCTAssertTrue(app.buttons["game.pause"].waitForExistence(timeout: 3))
             XCUIDevice.shared.orientation = .landscapeLeft
+            waitForOrientation(landscape: true, app: app)
+            // Synchronize through real interactions after the system rotation.
+            app.buttons["game.pause"].tap()
+            app.buttons["game.resume"].tap()
             capture("\(theme)-landscape", app: app)
             app.buttons["game.pause"].tap()
             app.buttons["game.leave"].tap()
             XCUIDevice.shared.orientation = .portrait
+            waitForOrientation(landscape: false, app: app)
         }
+    }
+
+    private func waitForOrientation(landscape: Bool, app: XCUIApplication) {
+        let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let frame = app.frame
+            return landscape ? frame.width > frame.height : frame.height > frame.width
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 10), .completed)
     }
 
     private func reveal(_ element: XCUIElement, in app: XCUIApplication, down: Bool = false) {
@@ -46,7 +60,7 @@ final class ArcadeUITests: XCTestCase {
     }
 
     private func capture(_ name: String, app: XCUIApplication) {
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)

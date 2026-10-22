@@ -2,6 +2,14 @@
 
 A reaction arcade for **iPhone, iPad, and native macOS**. Chase the bright square, build a combo, and catch power-ups as the board gets faster.
 
+<p>
+  <img src="docs/previews/studio.png" width="240" alt="Studio theme on iPhone">
+  <img src="docs/previews/sakura.png" width="240" alt="Sakura theme on iPhone">
+  <img src="docs/previews/cyber.png" width="240" alt="Cyber theme on iPhone">
+</p>
+
+Actual iPhone simulator captures. [Design notes and skill references](docs/DESIGN.md).
+
 ## Play your way
 
 - **Classic:** three starting lives; survive as long as you can.
@@ -55,7 +63,7 @@ Touch or click the bright tile. Hardware keyboard controls map each board row to
 
 ## Validation
 
-GitHub Actions runs core tests, builds both Apple apps, and exercises all themes, gameplay, pause/resume, and landscape on iPhone and iPad simulators. Screenshots and test result bundles are uploaded as the `apple-ui-results` artifact.
+GitHub Actions runs core tests, builds both Apple apps, and exercises all themes, gameplay, pause/resume, and landscape on iPhone and iPad simulators. Screenshots and test result bundles are uploaded as the `apple-ui-results-iPhone` and `apple-ui-results-iPad` artifacts.
 
 The core tests cover score accumulation, combo caps, acceleration, expired taps, timer catch-up, all power-ups, pause/resume, mode end conditions, restart, and legacy persistence. Before release, review simulator screenshots and run the [device checklist](docs/DESIGN.md) on real hardware, particularly Dynamic Type, VoiceOver, haptics, and reaction timing. Signing, App Store packaging, and distribution remain separate release steps.
 

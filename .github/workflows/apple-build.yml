@@ -11,6 +11,7 @@ permissions:
 jobs:
   validate:
     runs-on: macos-15
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode 16.4
@@ -25,19 +26,35 @@ jobs:
         run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
       - name: Build native macOS app
         run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaapMac -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
-      - name: Exercise themes and gameplay on iPhone
-        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -resultBundlePath iPhone.xcresult CODE_SIGNING_ALLOWED=NO test
-      - name: Exercise themes and gameplay on iPad
-        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'platform=iOS Simulator,name=iPad (A16)' -resultBundlePath iPad.xcresult CODE_SIGNING_ALLOWED=NO test
+  interface:
+    runs-on: macos-15
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device: iPhone 16 Pro
+            artifact: iPhone
+          - device: iPad (A16)
+            artifact: iPad
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Generate project
+        run: |
+          brew install xcodegen
+          xcodegen generate --spec project.yml
+      - name: Exercise themes, gameplay, and rotation
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'platform=iOS Simulator,name=${{ matrix.device }}' -resultBundlePath Results.xcresult CODE_SIGNING_ALLOWED=NO test
       - name: Export screenshots
         if: always()
         run: |
-          if [ -d iPhone.xcresult ]; then xcrun xcresulttool export attachments --path iPhone.xcresult --output-path screenshots/iPhone; fi
-          if [ -d iPad.xcresult ]; then xcrun xcresulttool export attachments --path iPad.xcresult --output-path screenshots/iPad; fi
+          if [ -d Results.xcresult ]; then xcrun xcresulttool export attachments --path Results.xcresult --output-path screenshots; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: apple-ui-results
+          name: apple-ui-results-${{ matrix.artifact }}
           path: |
             screenshots/
-            *.xcresult
+            Results.xcresult
