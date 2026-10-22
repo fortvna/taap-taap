@@ -25,10 +25,10 @@ struct CreatePlayerView: View {
                     if value.count > 24 { playerName = String(value.prefix(24)) }
                 }
             Text("Player color").font(.headline)
-            HStack(spacing: 16) {
+            HStack(spacing: 8) {
                 ForEach(Array(TileColor.presets.enumerated()), id: \.offset) { index, color in
                     Button { selectedColor = color } label: {
-                        Circle().fill(color.primaryColor).frame(width: 40, height: 40)
+                        Circle().fill(color.primaryColor).frame(width: 36, height: 36)
                             .overlay {
                                 if selectedColor == color {
                                     Image(systemName: "checkmark").font(.headline.bold()).foregroundStyle(.white)

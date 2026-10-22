@@ -117,7 +117,7 @@ struct GameView: View {
                 Text(viewModel.state.slowdownRemaining > 0 ? "Slow motion" : "Follow the light")
                     .font(.subheadline.weight(.semibold))
                 Spacer()
-                Text(String(format: "%.2fs", viewModel.state.targetTimeRemaining / (viewModel.state.slowdownRemaining > 0 ? 0.5 : 1)))
+                Text(String(format: "%.2fs", viewModel.state.targetSecondsRemaining))
                     .font(.system(.subheadline, design: .monospaced).bold()).foregroundStyle(theme.accent)
                     .monospacedDigit().accessibilityHidden(true)
             }

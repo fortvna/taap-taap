@@ -144,6 +144,7 @@ struct GameEngineTests {
         hit(game)
         hit(game)
         #expect(abs(game.state.currentDeadline.timeIntervalSince(start) - (game.state.jumpInterval + 2.5)) < 0.00001)
+        #expect(abs(game.state.targetSecondsRemaining - game.state.currentDeadline.timeIntervalSince(start)) < 0.00001)
     }
 
     @Test func shieldAbsorbsOnePenaltyAndPreservesCombo() {

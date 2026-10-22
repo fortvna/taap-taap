@@ -14,8 +14,7 @@ final class ArcadeUITests: XCTestCase {
             let name = app.textFields["player.name"]
             XCTAssertTrue(name.waitForExistence(timeout: 5))
             name.tap()
-            name.typeText("Arcade tester")
-            app.buttons["player.create"].tap()
+            name.typeText("Arcade tester\n")
             reveal(app.buttons["mode.zen"], in: app)
             app.buttons["mode.zen"].tap()
             reveal(app.buttons["game.start"], in: app)

@@ -34,6 +34,11 @@ public struct GameState: Sendable {
         timeRemaining = configuration.duration
     }
 
+    /// Real time left, including a slow effect that may expire mid-target.
+    public var targetSecondsRemaining: TimeInterval {
+        targetTimeRemaining + min(targetTimeRemaining, slowdownRemaining * 0.5)
+    }
+
     public var targetProgress: Double {
         min(1, max(0, targetTimeRemaining / jumpInterval))
     }

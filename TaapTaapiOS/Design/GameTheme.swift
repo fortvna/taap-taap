@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum GameTheme: String, CaseIterable, Identifiable {
+enum GameTheme: String, CaseIterable, Identifiable, Sendable {
     case studio, sakura, cyber
     var id: String { rawValue }
     var title: String {
