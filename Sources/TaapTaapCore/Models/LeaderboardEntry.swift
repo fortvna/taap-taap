@@ -7,6 +7,9 @@ public struct LeaderboardEntry: Identifiable, Codable, Hashable, Sendable {
     public let score: Int
     public let tapCount: Int
     public let maxMultiplier: Int
+    public let mode: GameMode?
+    public let bestStreak: Int?
+    public let accuracy: Double?
     public let playedAt: Date
 
     public init(
@@ -16,6 +19,9 @@ public struct LeaderboardEntry: Identifiable, Codable, Hashable, Sendable {
         score: Int,
         tapCount: Int,
         maxMultiplier: Int,
+        mode: GameMode = .classic,
+        bestStreak: Int = 0,
+        accuracy: Double = 1,
         playedAt: Date = .now
     ) {
         self.id = id
@@ -24,6 +30,9 @@ public struct LeaderboardEntry: Identifiable, Codable, Hashable, Sendable {
         self.score = score
         self.tapCount = tapCount
         self.maxMultiplier = maxMultiplier
+        self.mode = mode
+        self.bestStreak = bestStreak
+        self.accuracy = accuracy
         self.playedAt = playedAt
     }
 }

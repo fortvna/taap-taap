@@ -4,7 +4,9 @@ options:
 settings:
   base:
     SWIFT_VERSION: 6.0
-    IPHONEOS_DEPLOYMENT_TARGET: 17.0
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: 2.0.0
+    CURRENT_PROJECT_VERSION: 2
 packages:
   TaapTaapCore:
     path: .
@@ -24,6 +26,17 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         CFBundleDisplayName: Taap Taap
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     dependencies:
       - package: TaapTaapCore
     settings:
@@ -32,12 +45,46 @@ targets:
         PRODUCT_NAME: TaapTaap
         TARGETED_DEVICE_FAMILY: "1,2"
         GENERATE_INFOPLIST_FILE: NO
-  TaapTaapTests:
-    type: bundle.unit-test
+        SUPPORTS_MACCATALYST: NO
+  TaapTaapMac:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: TaapTaapiOS
+        excludes:
+          - Resources/Info.plist
+          - "**/*.md"
+    dependencies:
+      - package: TaapTaapCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fortvna.taaptaap.mac
+        PRODUCT_NAME: TaapTaap
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Taap Taap
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.arcade-games
+        ENABLE_APP_SANDBOX: YES
+  TaapTaapUITests:
+    type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: Tests/TaapTaapCoreTests
+      - path: Tests/TaapTaapUITests
     dependencies:
       - target: TaapTaap
-      - package: TaapTaapCore
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  TaapTaap:
+    build:
+      targets:
+        TaapTaap: all
+    test:
+      targets:
+        - TaapTaapUITests
+  TaapTaapMac:
+    build:
+      targets:
+        TaapTaapMac: all

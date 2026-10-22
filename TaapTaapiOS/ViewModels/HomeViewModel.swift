@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import TaapTaapCore
 
@@ -20,7 +21,7 @@ final class HomeViewModel: ObservableObject {
 
     func refresh() {
         players = playerStore.loadPlayers()
-        leaderboard = leaderboardStore.loadEntries(limit: 25)
+        leaderboard = leaderboardStore.loadEntries()
     }
 
     @discardableResult
@@ -38,13 +39,16 @@ final class HomeViewModel: ObservableObject {
         refresh()
     }
 
-    func saveResult(for player: PlayerProfile, tapCount: Int, maxMultiplier: Int, score: Int) {
+    func saveResult(for player: PlayerProfile, tapCount: Int, maxMultiplier: Int, score: Int, mode: GameMode, bestStreak: Int, accuracy: Double) {
         let entry = LeaderboardEntry(
             playerID: player.id,
             playerName: player.name,
             score: score,
             tapCount: tapCount,
-            maxMultiplier: maxMultiplier
+            maxMultiplier: maxMultiplier,
+            mode: mode,
+            bestStreak: bestStreak,
+            accuracy: accuracy
         )
         leaderboardStore.addEntry(entry)
         refresh()

@@ -1,0 +1,62 @@
+name: Apple builds and core tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+concurrency:
+  group: apple-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Test game rules and persistence
+        run: swift test
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate --spec project.yml
+      - name: Build iPhone and iPad
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Build native macOS app
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaapMac -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+  interface:
+    runs-on: macos-15
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device: iPhone 16 Pro
+            artifact: iPhone
+          - device: iPad (A16)
+            artifact: iPad
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Generate project
+        run: |
+          brew install xcodegen
+          xcodegen generate --spec project.yml
+      - name: Prepare simulator
+        run: python3 scripts/prepare_simulator.py '${{ matrix.device }}'
+      - name: Exercise themes, gameplay, and rotation
+        run: xcodebuild -project TaapTaap.xcodeproj -scheme TaapTaap -destination 'platform=iOS Simulator,id=${{ env.TAAP_SIMULATOR_UDID }}' -resultBundlePath Results.xcresult CODE_SIGNING_ALLOWED=NO test
+      - name: Export screenshots
+        if: always()
+        run: |
+          if [ -d Results.xcresult ]; then xcrun xcresulttool export attachments --path Results.xcresult --output-path screenshots; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apple-ui-results-${{ matrix.artifact }}
+          path: |
+            screenshots/
+            Results.xcresult

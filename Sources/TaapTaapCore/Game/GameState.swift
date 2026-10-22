@@ -1,29 +1,50 @@
 import Foundation
 
 public struct GameState: Sendable {
-    public var isRunning: Bool
-    public var isGameOver: Bool
-    public var activeTileIndex: Int
-    public var tapCount: Int
-    public var multiplier: Int
-    public var maxMultiplier: Int
+    public var isRunning = true
+    public var isGameOver = false
+    public var isPaused = false
+    public var activeTileIndex = 0
+    public var tapCount = 0
+    public var misses = 0
+    public var streak = 0
+    public var bestStreak = 0
+    public var multiplier = 1
+    public var maxMultiplier = 1
+    public var score = 0
     public var jumpInterval: TimeInterval
+    public var targetTimeRemaining: TimeInterval
     public var livesRemaining: Int
     public var currentDeadline: Date
+    public var elapsedTime: TimeInterval = 0
+    public var timeRemaining: TimeInterval?
+    public var slowdownRemaining: TimeInterval = 0
+    public var hasShield = false
+    public var powerUp: PowerUp?
+    public var lastReward: PowerUp?
+    public var lastPoints = 0
+    public var feedbackID = 0
+    public var feedback = "Follow the light"
 
     public init(configuration: GameConfiguration, now: Date) {
-        self.isRunning = true
-        self.isGameOver = false
-        self.activeTileIndex = 0
-        self.tapCount = 0
-        self.multiplier = 1
-        self.maxMultiplier = 1
-        self.jumpInterval = configuration.baseInterval
-        self.livesRemaining = configuration.startingLives
-        self.currentDeadline = now
+        jumpInterval = configuration.baseInterval
+        targetTimeRemaining = configuration.baseInterval
+        livesRemaining = configuration.startingLives
+        currentDeadline = now.addingTimeInterval(configuration.baseInterval)
+        timeRemaining = configuration.duration
     }
 
-    public var score: Int {
-        tapCount * maxMultiplier
+    /// Real time left, including a slow effect that may expire mid-target.
+    public var targetSecondsRemaining: TimeInterval {
+        targetTimeRemaining + min(targetTimeRemaining, slowdownRemaining * 0.5)
+    }
+
+    public var targetProgress: Double {
+        min(1, max(0, targetTimeRemaining / jumpInterval))
+    }
+    public var level: Int { 1 + tapCount / 10 }
+    public var accuracy: Double {
+        let attempts = tapCount + misses
+        return attempts == 0 ? 1 : Double(tapCount) / Double(attempts)
     }
 }
