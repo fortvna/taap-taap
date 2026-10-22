@@ -67,3 +67,4 @@ DerivedData/
 .swiftpm/
 *.xcresult/
 screenshots/
+dist/
